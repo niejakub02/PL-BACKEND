@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using pl_backend.Data;
@@ -11,9 +12,11 @@ using pl_backend.Data;
 namespace pl_backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230507185650_FixModels")]
+    partial class FixModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,7 +115,12 @@ namespace pl_backend.Migrations
                     b.Property<bool>("OffersHelp")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Markers");
                 });
@@ -199,9 +207,6 @@ namespace pl_backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("MarkerId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
@@ -211,8 +216,6 @@ namespace pl_backend.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MarkerId");
 
                     b.ToTable("Users");
                 });
@@ -278,6 +281,17 @@ namespace pl_backend.Migrations
                     b.Navigation("InvitingUser");
                 });
 
+            modelBuilder.Entity("pl_backend.Models.Marker", b =>
+                {
+                    b.HasOne("pl_backend.Models.User", "User")
+                        .WithMany("Markers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("pl_backend.Models.Message", b =>
                 {
                     b.HasOne("pl_backend.Models.Chat", "Chat")
@@ -316,17 +330,6 @@ namespace pl_backend.Migrations
                     b.Navigation("To");
                 });
 
-            modelBuilder.Entity("pl_backend.Models.User", b =>
-                {
-                    b.HasOne("pl_backend.Models.Marker", "Marker")
-                        .WithMany()
-                        .HasForeignKey("MarkerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Marker");
-                });
-
             modelBuilder.Entity("pl_backend.Models.UserLanguage", b =>
                 {
                     b.HasOne("pl_backend.Models.Language", "Language")
@@ -354,6 +357,8 @@ namespace pl_backend.Migrations
             modelBuilder.Entity("pl_backend.Models.User", b =>
                 {
                     b.Navigation("Chats");
+
+                    b.Navigation("Markers");
                 });
 #pragma warning restore 612, 618
         }
