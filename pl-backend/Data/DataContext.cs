@@ -31,8 +31,6 @@ namespace pl_backend.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseNpgsql("Server=mahmud.db.elephantsql.com;Initial Catalog=hioutuxk; User ID=hioutuxk; Password=pW9ZpLZM7zP1fU5koEUs0i1za25nR1nz;Trust Server Certificate=true");
-            //optionsBuilder.UseNpgsql("postgres://hioutuxk:pW9ZpLZM7zP1fU5koEUs0i1za25nR1nz@mahmud.db.elephantsql.com/hioutuxk");
             optionsBuilder.UseNpgsql("Host=mahmud.db.elephantsql.com;Database=hioutuxk;Username=hioutuxk;Password=pW9ZpLZM7zP1fU5koEUs0i1za25nR1nz");
         }
 

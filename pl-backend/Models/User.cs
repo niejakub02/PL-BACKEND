@@ -5,11 +5,6 @@ namespace pl_backend.Models
 {
     public class User
     {
-        public User()
-        {
-            Chats = new HashSet<Chat>();
-        }
-
         [Key]
         public int Id { get; set; }
         [Required]
@@ -23,8 +18,9 @@ namespace pl_backend.Models
         public string Description = string.Empty;
         public int Age { get; set; }
         public string Avatar { get; set; } = null!;
+        public int MarkerId { get; set; }
+        public Marker Marker { get; set; } = null!;
 
-        public ICollection<Marker> Markers { get; set; } = null!;
         public ICollection<Chat> Chats { get; set; } = null!;
     }
 }
