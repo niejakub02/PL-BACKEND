@@ -26,15 +26,17 @@ namespace pl_backend.Services
 
         public async Task<User> Authorization(UserDto userDto)
         {
-            User user = new User();
 
             if (userDto.Password.Length < 8) throw new Exception("Password is too short! It must be 8 characters long!");
 
             CreatePasswordHash(userDto.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            user.FirstName = userDto.FirstName;  //Potrzebujemy Id czy FirstName??????
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
+            User user = new()
+            {
+                Email = userDto.Email,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt
+            };
 
             _dataContext.Users.Add(user);
             await _dataContext.SaveChangesAsync();
@@ -53,8 +55,12 @@ namespace pl_backend.Services
 
         public async Task<string> Login(UserDto userDto)
         {
-            User? user = await _dataContext.Users.FirstOrDefaultAsync(u => u.FirstName == userDto.FirstName);
-            if (user.FirstName == null)
+            User? user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Email == userDto.Email);
+
+            if (user == null)
+                throw new Exception("User not found");
+
+            if (user.Email == null)
                 throw new Exception("User not found");
 
             if (!VerifyPasswordHash(userDto.Password, user.PasswordHash, user.PasswordSalt))

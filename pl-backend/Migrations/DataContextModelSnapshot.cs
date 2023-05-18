@@ -199,16 +199,16 @@ namespace pl_backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("MarkerId")
+                    b.Property<int?>("MarkerId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("PasswordHash")
+                    b.Property<byte[]>("PasswordHash")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("bytea");
 
-                    b.Property<string>("PasswordSalt")
+                    b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("bytea");
 
                     b.HasKey("Id");
 
@@ -320,9 +320,7 @@ namespace pl_backend.Migrations
                 {
                     b.HasOne("pl_backend.Models.Marker", "Marker")
                         .WithMany()
-                        .HasForeignKey("MarkerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MarkerId");
 
                     b.Navigation("Marker");
                 });

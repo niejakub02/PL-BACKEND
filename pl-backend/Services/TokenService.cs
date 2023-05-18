@@ -19,9 +19,10 @@ namespace pl_backend.Services
         private readonly IConfiguration _configuration;
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public TokenService(IConfiguration configuration)
+        public TokenService(IConfiguration configuration, IHttpContextAccessor contextAccessor)
         {
             _configuration = configuration;
+            _contextAccessor = contextAccessor;
         }
         public string CreateToken(User user)
         {

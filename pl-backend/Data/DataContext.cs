@@ -31,7 +31,7 @@ namespace pl_backend.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=mahmud.db.elephantsql.com;Database=hioutuxk;Username=hioutuxk;Password=pW9ZpLZM7zP1fU5koEUs0i1za25nR1nz");
+            optionsBuilder.UseNpgsql("Host=mahmud.db.elephantsql.com;Database=hioutuxk;Username=hioutuxk;Password=pW9ZpLZM7zP1fU5koEUs0i1za25nR1nz;SearchPath=non-public");
         }
 
 
