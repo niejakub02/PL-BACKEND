@@ -26,21 +26,43 @@ namespace pl_backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Markers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Latitude = table.Column<double>(type: "double precision", nullable: false),
+                    Longitude = table.Column<double>(type: "double precision", nullable: false),
+                    OffersHelp = table.Column<bool>(type: "boolean", nullable: false),
+                    City = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Markers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Email = table.Column<string>(type: "text", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: false),
-                    PasswordSalt = table.Column<string>(type: "text", nullable: false),
+                    PasswordHash = table.Column<byte[]>(type: "bytea", nullable: false),
+                    PasswordSalt = table.Column<byte[]>(type: "bytea", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     Age = table.Column<int>(type: "integer", nullable: false),
-                    Avatar = table.Column<string>(type: "text", nullable: false)
+                    Avatar = table.Column<string>(type: "text", nullable: false),
+                    MarkerId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Markers_MarkerId",
+                        column: x => x.MarkerId,
+                        principalTable: "Markers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -92,29 +114,6 @@ namespace pl_backend.Migrations
                     table.ForeignKey(
                         name: "FK_Contacts_Users_InvitingUserId",
                         column: x => x.InvitingUserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Markers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Latitude = table.Column<double>(type: "double precision", nullable: false),
-                    Longitude = table.Column<double>(type: "double precision", nullable: false),
-                    OffersHelp = table.Column<bool>(type: "boolean", nullable: false),
-                    City = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Markers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Markers_Users_UserId",
-                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -223,11 +222,6 @@ namespace pl_backend.Migrations
                 column: "InvitingUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Markers_UserId",
-                table: "Markers",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Messages_ChatId",
                 table: "Messages",
                 column: "ChatId");
@@ -256,6 +250,11 @@ namespace pl_backend.Migrations
                 name: "IX_UserLanguages_UserId",
                 table: "UserLanguages",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_MarkerId",
+                table: "Users",
+                column: "MarkerId");
         }
 
         /// <inheritdoc />
@@ -263,9 +262,6 @@ namespace pl_backend.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Contacts");
-
-            migrationBuilder.DropTable(
-                name: "Markers");
 
             migrationBuilder.DropTable(
                 name: "Messages");
@@ -284,6 +280,9 @@ namespace pl_backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Markers");
         }
     }
 }

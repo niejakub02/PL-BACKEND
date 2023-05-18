@@ -10,15 +10,14 @@ namespace pl_backend.Models
         [Required]
         public string? Email { get; set; }
         [Required]
-        public byte[] PasswordHash { get; set; }
+        public byte[] PasswordHash { get; set; } = null!;
         [Required]
-        public byte[] PasswordSalt { get; set; }
-        [Required]
-        public string? FirstName { get; set; }
+        public byte[] PasswordSalt { get; set; } = null!;
+        public string FirstName { get; set; } = string.Empty;
         public string Description = string.Empty;
         public int Age { get; set; }
-        public string Avatar { get; set; } = null!;
-        public int MarkerId { get; set; }
+        public string Avatar { get; set; } = string.Empty;
+        public int? MarkerId { get; set; }
         public Marker Marker { get; set; } = null!;
 
         public ICollection<Chat> Chats { get; set; } = null!;
