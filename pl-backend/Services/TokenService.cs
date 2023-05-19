@@ -87,16 +87,20 @@ namespace pl_backend.Services
 
         public User GetCurrentUser()
         {
-            var identity = _contextAccessor.HttpContext.User.Identity as ClaimsIdentity;
+            var identity = _contextAccessor?.HttpContext?.User.Identity as ClaimsIdentity;
 
             if (identity != null)
             {
                 var userClaims = identity.Claims;
 
-                return new User
+                string? nameIdentifier = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (nameIdentifier != null)
                 {
-                    Id = int.Parse(userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value),
-                };
+                    return new User
+                    {
+                        Id = int.Parse(nameIdentifier)
+                    };
+                }
             }
             return null;
         }
