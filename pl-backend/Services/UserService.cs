@@ -5,6 +5,7 @@ using pl_backend.Models;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Identity;
 
 namespace pl_backend.Services
 {
@@ -13,6 +14,7 @@ namespace pl_backend.Services
         Task<User> Authorization(UserDto userDto);
         Task<string> Login(UserDto userDto);
         Task<User> GetUserId(int Id);
+        Task<User> UpdateUser(UserUpdateDto userUpdateDto);
     }
     public class UserService : IUserService
     {
@@ -69,6 +71,49 @@ namespace pl_backend.Services
             string token = _tokenService.CreateToken(user);
 
             return token;
+        }
+
+        public async Task<User> UpdateUser(UserUpdateDto userUpdateDto)
+        {
+
+            User? userId = _tokenService.GetCurrentUser();
+            if (userId == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            User? user = await _dataContext.Users.FindAsync(userId.Id);
+            if (user == null) throw new Exception("User not found");
+
+            if (userUpdateDto.FirstName != null) user.FirstName = userUpdateDto.FirstName;
+            if (userUpdateDto.LastName != null) user.LastName = userUpdateDto.LastName;
+            if (userUpdateDto.Age != default) user.Age = userUpdateDto.Age;
+            if (userUpdateDto.Description != null) user.Description = userUpdateDto.Description;
+
+            if (userUpdateDto.Language != default)
+            {
+                List<UserLanguage> languages = await _dataContext.UserLanguages
+                    .Where(ul => ul.UserId == user.Id)
+                    .ToListAsync();
+
+                _dataContext.UserLanguages.RemoveRange(languages);
+                foreach (int languageId in userUpdateDto.Language)
+                {
+                    Language? language = await _dataContext.Languages.FindAsync(languageId);
+                    UserLanguage userLanguage = new()
+                    {
+                        UserId = user.Id,
+                        LanguageId = languageId
+                    };
+
+                    _dataContext.UserLanguages.Add(userLanguage);
+                }
+
+            }
+
+            await _dataContext.SaveChangesAsync();
+
+            return user;
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

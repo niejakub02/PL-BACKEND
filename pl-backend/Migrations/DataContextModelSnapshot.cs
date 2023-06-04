@@ -199,6 +199,10 @@ namespace pl_backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int?>("MarkerId")
                         .HasColumnType("integer");
 
@@ -334,7 +338,7 @@ namespace pl_backend.Migrations
                         .IsRequired();
 
                     b.HasOne("pl_backend.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Languages")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -352,6 +356,8 @@ namespace pl_backend.Migrations
             modelBuilder.Entity("pl_backend.Models.User", b =>
                 {
                     b.Navigation("Chats");
+
+                    b.Navigation("Languages");
                 });
 #pragma warning restore 612, 618
         }

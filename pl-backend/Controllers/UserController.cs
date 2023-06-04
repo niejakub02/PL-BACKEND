@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using pl_backend.Data;
 using pl_backend.DTO;
 using pl_backend.Models;
@@ -73,6 +74,20 @@ namespace pl_backend.Controllers
         {
             User user = TokenService.GetCurrentUser();
             return Ok(user);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<User>> Edit(UserUpdateDto userUpdateDto)
+        {
+            try
+            {
+                User? user = await UserService.UpdateUser(userUpdateDto);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
