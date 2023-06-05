@@ -15,6 +15,7 @@ namespace pl_backend.Services
         Task<string> Login(UserDto userDto);
         Task<User> GetUserId(int Id);
         Task<User> UpdateUser(UserUpdateDto userUpdateDto);
+        Task<Contact> InviteUser(int Id);
     }
     public class UserService : IUserService
     {
@@ -53,6 +54,53 @@ namespace pl_backend.Services
             if (user == null) throw new Exception("User not found");
 
             return user;
+        }
+
+        public async Task<Contact> InviteUser(int id)
+        {
+            User? currentUser = _tokenService.GetCurrentUser();
+            if (currentUser == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            User? user = await _dataContext.Users.FindAsync(id);
+            if (user == null)
+            {
+                throw new Exception("User you want to invite was not found");
+            }
+
+            Contact? contactAnswer = await _dataContext.Contacts.FirstOrDefaultAsync(c => c.InvitingUserId == id && c.InvitedUserId == currentUser.Id);
+            if (contactAnswer != null)
+            {
+                if (contactAnswer.Status == false)
+                {
+                    contactAnswer.Status = true;
+                    await _dataContext.SaveChangesAsync();
+                    return contactAnswer;
+                }
+                else
+                {
+                    throw new Exception("You already met");
+                }
+            }
+
+
+            Contact? contact = await _dataContext.Contacts.FirstOrDefaultAsync(c => c.InvitingUserId == currentUser.Id && c.InvitedUserId == id);
+            if (contact == null)
+            {
+                Contact _contact = new()
+                {
+                    Status = false,
+                    Met = DateTime.Now,
+                    InvitingUserId = currentUser.Id,
+                    InvitedUserId = id
+                };
+                _dataContext.Contacts.Add(_contact);
+                await _dataContext.SaveChangesAsync();
+                return _contact;
+            }
+            throw new Exception("Already sent invitation");
         }
 
         public async Task<string> Login(UserDto userDto)

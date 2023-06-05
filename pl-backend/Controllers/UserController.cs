@@ -55,6 +55,20 @@ namespace pl_backend.Controllers
             }
         }
 
+        [HttpPost("{Id}/invite")]
+        public async Task<ActionResult<Contact>> InviteUser(int id)
+        {
+            try
+            {
+                Contact? contact = await UserService.InviteUser(id);
+                return Ok(contact);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("{Id}")]
         public async Task<ActionResult<User>> GetUser(int Id)
         {
