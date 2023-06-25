@@ -20,6 +20,7 @@ namespace pl_backend.Models
         public string Avatar { get; set; } = string.Empty;
         public int? MarkerId { get; set; }
         public Marker Marker { get; set; } = null!;
+        public ICollection<Contact> Contacts { get; set; } = null!;
         public ICollection<UserLanguage> Languages { get; set; } = null!;
         public ICollection<Chat> Chats { get; set; } = null!;
     }

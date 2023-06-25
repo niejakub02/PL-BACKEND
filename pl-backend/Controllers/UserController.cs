@@ -55,6 +55,20 @@ namespace pl_backend.Controllers
             }
         }
 
+        [HttpGet("{Id}")]
+        public async Task<ActionResult<User>> GetUser(int Id)
+        {
+            try
+            {
+                User? user = await UserService.GetUserId(Id);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("{Id}/invite")]
         public async Task<ActionResult<Contact>> InviteUser(int id)
         {
@@ -69,18 +83,77 @@ namespace pl_backend.Controllers
             }
         }
 
-        [HttpGet("{Id}")]
-        public async Task<ActionResult<User>> GetUser(int Id)
+        [HttpDelete("{Id}/DeclineInvitation")]
+        public async Task<ActionResult<Contact>> DeclineInvitation(int id)
         {
             try
             {
-                User? user = await UserService.GetUserId(Id);
-                return Ok(user);
+                Contact? contact = await UserService.DeclineInvitation(id);
+                return Ok(contact);
             }
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpGet("{Id}/GetReviews")]
+        public async Task<ActionResult<List<GetReviewDto>>> GetReviews(int id)
+        {
+            try
+            {
+                List<GetReviewDto> reviewDtos = await UserService.GetReviews(id);
+                return reviewDtos;
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpPost("AddReview")]
+        public async Task<ActionResult<Review>> AddReview(AddReviewDto addReviewDto)
+        {
+            try
+            {
+                Review? review = await UserService.AddReview(addReviewDto);
+                return Ok(review);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("Contacts")]
+        public async Task<ActionResult<List<UserContactDto>>> GetContacts()
+        {
+            try
+            {
+                List<UserContactDto> users = await UserService.GetContacts();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
+
+        [HttpGet("Invitations")]
+        public async Task<ActionResult<List<UserContactDto>>> GetInvitations()
+        {
+            try
+            {
+                List<UserContactDto> users = await UserService.GetInvitations();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpGet("Verify")]
