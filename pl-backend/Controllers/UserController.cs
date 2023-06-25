@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using pl_backend.Data;
 using pl_backend.DTO;
 using pl_backend.Models;
@@ -68,11 +69,112 @@ namespace pl_backend.Controllers
             }
         }
 
+        [HttpPost("{Id}/invite")]
+        public async Task<ActionResult<Contact>> InviteUser(int id)
+        {
+            try
+            {
+                Contact? contact = await UserService.InviteUser(id);
+                return Ok(contact);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("{Id}/DeclineInvitation")]
+        public async Task<ActionResult<Contact>> DeclineInvitation(int id)
+        {
+            try
+            {
+                Contact? contact = await UserService.DeclineInvitation(id);
+                return Ok(contact);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("{Id}/GetReviews")]
+        public async Task<ActionResult<List<GetReviewDto>>> GetReviews(int id)
+        {
+            try
+            {
+                List<GetReviewDto> reviewDtos = await UserService.GetReviews(id);
+                return reviewDtos;
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpPost("AddReview")]
+        public async Task<ActionResult<Review>> AddReview(AddReviewDto addReviewDto)
+        {
+            try
+            {
+                Review? review = await UserService.AddReview(addReviewDto);
+                return Ok(review);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("Contacts")]
+        public async Task<ActionResult<List<UserContactDto>>> GetContacts()
+        {
+            try
+            {
+                List<UserContactDto> users = await UserService.GetContacts();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
+
+        [HttpGet("Invitations")]
+        public async Task<ActionResult<List<UserContactDto>>> GetInvitations()
+        {
+            try
+            {
+                List<UserContactDto> users = await UserService.GetInvitations();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         [HttpGet("Verify")]
         public async Task<ActionResult<User>> Verify()
         {
             User user = TokenService.GetCurrentUser();
             return Ok(user);
+        }
+
+        [HttpPut]
+        public async Task<ActionResult<User>> Edit(UserUpdateDto userUpdateDto)
+        {
+            try
+            {
+                User? user = await UserService.UpdateUser(userUpdateDto);
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

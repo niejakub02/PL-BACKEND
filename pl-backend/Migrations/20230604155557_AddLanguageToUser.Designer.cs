@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using pl_backend.Data;
@@ -11,9 +12,11 @@ using pl_backend.Data;
 namespace pl_backend.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230604155557_AddLanguageToUser")]
+    partial class AddLanguageToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,7 +63,7 @@ namespace pl_backend.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Met")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("Status")
                         .HasColumnType("boolean");
@@ -126,7 +129,7 @@ namespace pl_backend.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("At")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ChatId")
                         .HasColumnType("integer");
@@ -268,13 +271,13 @@ namespace pl_backend.Migrations
                     b.HasOne("pl_backend.Models.User", "InvitedUser")
                         .WithMany()
                         .HasForeignKey("InvitedUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("pl_backend.Models.User", "InvitingUser")
-                        .WithMany("Contacts")
+                        .WithMany()
                         .HasForeignKey("InvitingUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("InvitedUser");
@@ -356,8 +359,6 @@ namespace pl_backend.Migrations
             modelBuilder.Entity("pl_backend.Models.User", b =>
                 {
                     b.Navigation("Chats");
-
-                    b.Navigation("Contacts");
 
                     b.Navigation("Languages");
                 });

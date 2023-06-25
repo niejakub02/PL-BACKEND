@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace pl_backend.Models
@@ -12,11 +13,13 @@ namespace pl_backend.Models
 
         [ForeignKey("InvitingUser")]
         public int InvitingUserId { get; set; }
+        [JsonIgnore]
         [Required]
         public User? InvitingUser { get; set; }
 
         [ForeignKey("InvitedUser")]
         public int InvitedUserId { get; set; }
+        [JsonIgnore]
         [Required]
         public User? InvitedUser { get; set; }
     }

@@ -27,13 +27,37 @@ namespace pl_backend.Data
             .WithMany()
             .HasForeignKey(c => c.InvitedUserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Contact>()
+            .HasOne(c => c.InvitingUser)
+            .WithMany(u => u.Contacts)
+            .HasForeignKey(c => c.InvitingUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Contact>()
+            .HasOne(c => c.InvitedUser)
+            .WithMany()
+            .HasForeignKey(c => c.InvitedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Review>()
+            .HasOne(r => r.From)
+            .WithMany()
+            .HasForeignKey(r => r.FromId)
+            .IsRequired();
+
+            modelBuilder.Entity<Review>()
+            .HasOne(r => r.To)
+            .WithMany()
+            .HasForeignKey(r => r.ToId)
+            .IsRequired();
+
+            base.OnModelCreating(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql("Host=mahmud.db.elephantsql.com;Database=hioutuxk;Username=hioutuxk;Password=pW9ZpLZM7zP1fU5koEUs0i1za25nR1nz;SearchPath=non-public");
         }
-
-
     }
 }
