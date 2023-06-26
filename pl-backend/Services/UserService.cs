@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
 using System.Diagnostics.Contracts;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace pl_backend.Services
 {
@@ -25,6 +26,7 @@ namespace pl_backend.Services
         Task<List<GetReviewDto>> GetReviews(int id);
         Task<Marker> AddMarker(Marker marker);
         Task<User> DeleteMarker();
+        Task<User> Informations();
     }
     public class UserService : IUserService
     {
@@ -194,6 +196,29 @@ namespace pl_backend.Services
             _dataContext.Contacts.Remove(invitation);
             await _dataContext.SaveChangesAsync();
             return invitation;
+        }
+
+        public async Task<User> Informations()
+        {
+            User? currentUser = _tokenService.GetCurrentUser();
+            if (currentUser == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            User? user = await _dataContext.Users
+                .Include(u => u.Contacts)
+                .Include(u => u.Marker)
+                .Include(u => u.Languages)
+                    .ThenInclude(l => l.Language)
+                .Include(u => u.Chats)
+                .Where(u => u.Id == currentUser.Id)
+                .FirstOrDefaultAsync();
+            if (user == null)
+            {
+                throw new Exception("You can not deciline invitation to user that does not exist");
+            }
+            return user;
         }
 
         public async Task<List<UserContactDto>> GetContacts()

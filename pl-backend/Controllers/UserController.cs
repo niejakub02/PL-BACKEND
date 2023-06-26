@@ -154,6 +154,21 @@ namespace pl_backend.Controllers
             }
         }
 
+        [HttpGet("Informations")]
+        public async Task<ActionResult<User>> Informations()
+        {
+            try
+            {
+                User users = await UserService.Informations();
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
         [HttpGet("Contacts")]
         public async Task<ActionResult<List<UserContactDto>>> GetContacts()
         {
