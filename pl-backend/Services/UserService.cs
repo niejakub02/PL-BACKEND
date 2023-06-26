@@ -23,6 +23,8 @@ namespace pl_backend.Services
         Task<List<UserContactDto>> GetInvitations();
         Task<Review> AddReview(AddReviewDto addReviewDto);
         Task<List<GetReviewDto>> GetReviews(int id);
+        Task<Marker> AddMarker(Marker marker);
+        Task<User> DeleteMarker();
     }
     public class UserService : IUserService
     {
@@ -56,9 +58,69 @@ namespace pl_backend.Services
 
         public async Task<User> GetUserId(int Id)
         {
-            User? user = await _dataContext.Users.Where(u => u.Id == Id).FirstOrDefaultAsync();
+            User? user = await _dataContext.Users
+                .Include(u => u.Contacts)
+                .Include(u => u.Languages)
+                .Include(u => u.Marker)
+                .Where(u => u.Id == Id)
+                .FirstOrDefaultAsync();
 
             if (user == null) throw new Exception("User not found");
+
+            return user;
+        }
+
+        public async Task<Marker> AddMarker(Marker marker)
+        {
+            User? user = await _dataContext.Users.FindAsync(_tokenService.GetCurrentUser()?.Id);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            Marker newMarker= new Marker()
+            {
+                Latitude = marker.Latitude,
+                Longitude = marker.Longitude,
+                City = marker.City,
+                OffersHelp = marker.OffersHelp,
+            };
+            _dataContext.Markers.Add(newMarker);
+            await _dataContext.SaveChangesAsync();
+
+            user.MarkerId = newMarker.Id;
+            await _dataContext.SaveChangesAsync();
+
+            return marker;
+        }
+
+        public async Task<User> DeleteMarker()
+        {
+            User? currentUser = _tokenService.GetCurrentUser();
+            if (currentUser == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            User? user = await _dataContext.Users.FindAsync(currentUser.Id);
+            if (user == null)
+            {
+                throw new Exception("User not found - can not delete marker");
+            }
+
+            if (user.MarkerId != null)
+            {
+                Marker? marker = await _dataContext.Markers.FindAsync(user.MarkerId);
+                if (marker != null)
+                {
+                    _dataContext.Markers.Remove(marker);
+                }
+            }
+
+            user.MarkerId = null;
+            user.Marker = null;
+
+            await _dataContext.SaveChangesAsync();
 
             return user;
         }
