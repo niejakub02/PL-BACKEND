@@ -69,6 +69,20 @@ namespace pl_backend.Controllers
             }
         }
 
+        [HttpPost("AddMarker")]
+        public async Task<ActionResult<Marker>> AddMarker(Marker marker)
+        {
+            try
+            {
+                Marker m = await UserService.AddMarker(marker);
+                return Ok(m);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("{Id}/invite")]
         public async Task<ActionResult<Contact>> InviteUser(int id)
         {
@@ -76,6 +90,20 @@ namespace pl_backend.Controllers
             {
                 Contact? contact = await UserService.InviteUser(id);
                 return Ok(contact);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("DeleteMarker")]
+        public async Task<ActionResult<User>> DeleteMarker()
+        {
+            try
+            {
+                User? user = await UserService.DeleteMarker();
+                return Ok(user);
             }
             catch (Exception ex)
             {
