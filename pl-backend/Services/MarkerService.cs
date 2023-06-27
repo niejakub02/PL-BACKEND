@@ -28,11 +28,8 @@ namespace pl_backend.Services
             {
                 query = query.Where(m => m.City.Contains(city));
             }
+            query = query.Where(m => m.OffersHelp);
 
-            if (offersHelp)
-            {
-                query = query.Where(m => m.OffersHelp);
-            }
 
             List<Marker> markers = await query.ToListAsync();
 
