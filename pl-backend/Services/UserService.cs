@@ -80,6 +80,11 @@ namespace pl_backend.Services
                 throw new Exception("User not found");
             }
 
+            if (user.MarkerId != null)
+            {
+                throw new Exception("You already created marker");
+            }
+
             Marker newMarker= new Marker()
             {
                 Latitude = marker.Latitude,
