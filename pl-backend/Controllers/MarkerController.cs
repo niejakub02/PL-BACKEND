@@ -24,7 +24,7 @@ namespace pl_backend.Controllers
         }
 
         [HttpGet("Markers")]
-        public async Task<ActionResult<List<Marker>>> GetMarkers([FromQuery(Name = "city")] string city, [FromQuery(Name = "offersHelp")] bool offersHelp = false)
+        public async Task<ActionResult<List<Marker>>> GetMarkers([FromQuery(Name = "city")] string city = "*", [FromQuery(Name = "offersHelp")] bool offersHelp = false)
         {
             try
             {

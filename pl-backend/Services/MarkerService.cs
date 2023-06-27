@@ -22,9 +22,27 @@ namespace pl_backend.Services
 
         public async Task<List<Marker>> GetMarkers(string city, bool offersHelp)
         {
-            List<Marker> markers = await _dataContext.Markers
-                .Where(m => (m.City.Contains(city) && m.OffersHelp.Equals(offersHelp)))
-                .ToListAsync();
+            IQueryable<Marker> query = _dataContext.Markers;
+
+            if (city != "*")
+            {
+                query = query.Where(m => m.City.Contains(city));
+            }
+
+            if (offersHelp)
+            {
+                query = query.Where(m => m.OffersHelp);
+            }
+
+            List<Marker> markers = await query.ToListAsync();
+
+            //List<Marker> markers = await query.
+            //    .Join(_dataContext)
+            //    ToListAsync();
+            //return markers;
+            //List<Marker> markers = await _dataContext.Markers
+            //    .Where(m => (m.City.Contains(city) && m.OffersHelp.Equals(offersHelp)))
+            //    .ToListAsync();
             return markers;
         }
 
