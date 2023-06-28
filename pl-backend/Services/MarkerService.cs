@@ -9,7 +9,7 @@ namespace pl_backend.Services
 {
     public interface IMarkerService
     {
-        Task<List<MarkerDto>> GetMarkers(string city, bool offersHelp, string language);
+        Task<List<MarkerDto>> GetMarkers(string city, bool? offersHelp, int[] languages);
         Task<User> GetMarkerOwner(int MarkerId);
     }
 
@@ -22,7 +22,7 @@ namespace pl_backend.Services
             _dataContext = dataContext;
         }
 
-        public async Task<List<MarkerDto>> GetMarkers(string city, bool offersHelp, string language)
+        public async Task<List<MarkerDto>> GetMarkers(string city, bool? offersHelp, int[] languages)
         {
             IQueryable<Marker> query = _dataContext.Markers;
 
@@ -31,19 +31,29 @@ namespace pl_backend.Services
                 query = query.Where(m => m.City.Contains(city));
             }
 
-            query = query.Where(m => m.OffersHelp == offersHelp);
+            if (offersHelp != null)
+            {
+                query = query.Where(m => m.OffersHelp == offersHelp);
+            }
 
             List<Marker> markers = await query.ToListAsync();
             List<MarkerDto> markerDtos = new List<MarkerDto>();
             foreach (Marker marker in markers) {
                 User? u = null;
-                if (language != "*")
+                if (languages.Length > 0)
                 {
-                    u = await _dataContext.Users
-                        .Include(u => u.Languages)
-                            .ThenInclude(l => l.Language)
-                        .Where(u => u.MarkerId.Equals(marker.Id) && u.Languages.Any(l => l.Language.LanguageName == language))
-                        .FirstOrDefaultAsync();
+                    foreach (int lang in languages)
+                    {
+                        u = await _dataContext.Users
+                       .Include(u => u.Languages)
+                           .ThenInclude(l => l.Language)
+                       .Where(u => u.MarkerId.Equals(marker.Id) && u.Languages.Any(l => l.Language.Id == lang))
+                       .FirstOrDefaultAsync();
+                        if (u != null)
+                        {
+                            break;
+                        }
+                    }
                 }
                 else
                 {
@@ -59,14 +69,6 @@ namespace pl_backend.Services
                     markerDtos.Add(new MarkerDto(marker, u));
                 }
             }
-            
-            //List<Marker> markers = await query.
-            //    .Join(_dataContext)
-            //    ToListAsync();
-            //return markers;
-            //List<Marker> markers = await _dataContext.Markers
-            //    .Where(m => (m.City.Contains(city) && m.OffersHelp.Equals(offersHelp)))
-            //    .ToListAsync();
             return markerDtos;
         }
 
