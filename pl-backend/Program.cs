@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using pl_backend.Data;
+using pl_backend.Hubs;
 using pl_backend.Services;
 using System.Text.Json.Serialization;
 
@@ -18,6 +20,11 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IMarkerService, MarkerService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSignalR();
+
+builder.Services.AddResponseCompression(options =>
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" })
+);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
@@ -59,7 +66,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 
 app.UseAuthorization();
-
+app.MapHub<ChatHub>("/chathub");
 app.MapControllers();
 
 app.Run();
