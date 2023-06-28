@@ -37,6 +37,20 @@ namespace pl_backend.Controllers
             }
         }
 
+        [HttpGet("Cities")]
+        public async Task<ActionResult<List<string?>>> GetCities()
+        {
+            try
+            {
+                List<string?> cities = await MarkerService.GetCities();
+                return Ok(cities);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpGet("{MarkerId}/Owner")]
         public async Task<ActionResult<User>> GetMarkerOwner(int MarkerId)
         {

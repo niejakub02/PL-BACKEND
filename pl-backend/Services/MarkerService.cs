@@ -11,6 +11,7 @@ namespace pl_backend.Services
     {
         Task<List<MarkerDto>> GetMarkers(string city, bool? offersHelp, int[] languages);
         Task<User> GetMarkerOwner(int MarkerId);
+        Task<List<string?>> GetCities();
     }
 
     public class MarkerService : IMarkerService
@@ -70,6 +71,15 @@ namespace pl_backend.Services
                 }
             }
             return markerDtos;
+        }
+
+        public async Task<List<string?>> GetCities()
+        {
+            List<string?> cities = await _dataContext.Markers
+                .Select(m => m.City)
+                .Distinct()
+                .ToListAsync();
+            return cities;
         }
 
         public async Task<User> GetMarkerOwner(int MarkerId)
