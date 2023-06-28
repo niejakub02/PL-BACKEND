@@ -82,21 +82,28 @@ namespace pl_backend.Services
 
             if (user.MarkerId != null)
             {
-                throw new Exception("You already created marker");
+                Marker? newMarker = await _dataContext.Markers.FindAsync(user.MarkerId);
+                newMarker.Latitude = marker.Latitude;
+                newMarker.Longitude = marker.Longitude;
+                newMarker.City= marker.City;
+                newMarker.OffersHelp = marker.OffersHelp;
+                await _dataContext.SaveChangesAsync();
             }
-
-            Marker newMarker= new Marker()
+            else
             {
-                Latitude = marker.Latitude,
-                Longitude = marker.Longitude,
-                City = marker.City,
-                OffersHelp = marker.OffersHelp,
-            };
-            _dataContext.Markers.Add(newMarker);
-            await _dataContext.SaveChangesAsync();
 
-            user.MarkerId = newMarker.Id;
-            await _dataContext.SaveChangesAsync();
+                Marker newMarker= new Marker()
+                {
+                    Latitude = marker.Latitude,
+                    Longitude = marker.Longitude,
+                    City = marker.City,
+                    OffersHelp = marker.OffersHelp,
+                };
+                _dataContext.Markers.Add(newMarker);
+                await _dataContext.SaveChangesAsync();
+                user.MarkerId = newMarker.Id;
+                await _dataContext.SaveChangesAsync();
+            }
 
             return marker;
         }
