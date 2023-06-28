@@ -24,11 +24,11 @@ namespace pl_backend.Controllers
         }
 
         [HttpGet("Markers")]
-        public async Task<ActionResult<List<MarkerDto>>> GetMarkers([FromQuery(Name = "city")] string city = "*", [FromQuery(Name = "offersHelp")] bool offersHelp = false, [FromQuery(Name = "language")] string language = "*")
+        public async Task<ActionResult<List<MarkerDto>>> GetMarkers([FromQuery(Name = "language")] int[] languages, [FromQuery(Name = "offersHelp")] bool? offersHelp, [FromQuery(Name = "city")] string city = "*")
         {
             try
             {
-                List<MarkerDto> markers = await MarkerService.GetMarkers(city, offersHelp, language);
+                List<MarkerDto> markers = await MarkerService.GetMarkers(city, offersHelp, languages);
                 return Ok(markers);
             }
             catch (Exception ex)
