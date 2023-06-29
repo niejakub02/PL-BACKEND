@@ -25,7 +25,13 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="images\" />
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\images\08f5e067-0d15-4765-8184-29e5d105389d_silacze.png" />
+    <None Include="wwwroot\images\82652dd0-e681-4d6f-b585-c6c9fc69340a_silacze.png" />
+    <None Include="wwwroot\images\ba45c79b-ac36-4513-8040-a7889176a99c_silacze.png" />
   </ItemGroup>
 
 </Project>

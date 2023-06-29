@@ -458,8 +458,8 @@ namespace pl_backend.Services
 
             if (imageFile != null)
             {
-                string imagePath = await UploadImage(imageFile); // Upload the image file and get the path
-                user.Avatar = imagePath; // Set the image path in the user object
+                string imagePath = await UploadImage(imageFile);
+                user.Avatar = imagePath;
             }
 
             await _dataContext.SaveChangesAsync();
@@ -469,16 +469,16 @@ namespace pl_backend.Services
 
         private async Task<string> UploadImage(IFormFile imageFile)
         {
-            string uploadsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "images"); // Path to the images folder
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName; // Generate a unique file name
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName); // Full path to save the file
+            string uploadsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "wwwroot/images");
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
             using (var fileStream = new FileStream(filePath, FileMode.Create))
             {
-                await imageFile.CopyToAsync(fileStream); // Save the file to the server
+                await imageFile.CopyToAsync(fileStream);
             }
 
-            return "/images/" + uniqueFileName; // Return the relative image path to be stored in the database
+            return "/images/" + uniqueFileName;
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
