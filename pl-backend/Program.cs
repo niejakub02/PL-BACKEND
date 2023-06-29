@@ -46,7 +46,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
 {
-    policy.WithOrigins("http://127.0.0.1:5173").AllowAnyHeader().AllowAnyMethod();
+    policy.WithOrigins("http://127.0.0.1:5173").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
 }));
 
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
