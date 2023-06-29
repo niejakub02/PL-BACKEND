@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using AutoMapper;
 using System.Diagnostics.Contracts;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.AspNetCore.Hosting;
 
 namespace pl_backend.Services
 {
@@ -17,7 +18,7 @@ namespace pl_backend.Services
         Task<User> Authorization(UserDto userDto);
         Task<string> Login(UserDto userDto);
         Task<User> GetUserId(int Id);
-        Task<User> UpdateUser(UserUpdateDto userUpdateDto);
+        Task<User> UpdateUser(UserUpdateDto userUpdateDto, IFormFile? imageFile);
         Task<Contact> InviteUser(int Id);
         Task<Contact> DeclineInvitation(int id);
         Task<List<UserContactDto>> GetContacts();
@@ -32,10 +33,14 @@ namespace pl_backend.Services
     {
         private readonly DataContext _dataContext;
         private readonly ITokenService _tokenService;
-        public UserService(DataContext dataContext, ITokenService tokenService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public UserService(DataContext dataContext, ITokenService tokenService, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment webHostEnvironment)
         {
             _dataContext = dataContext;
             _tokenService = tokenService;
+            _httpContextAccessor = httpContextAccessor;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public async Task<User> Authorization(UserDto userDto)
@@ -414,7 +419,7 @@ namespace pl_backend.Services
             return token;
         }
 
-        public async Task<User> UpdateUser(UserUpdateDto userUpdateDto)
+        public async Task<User> UpdateUser(UserUpdateDto userUpdateDto, IFormFile? imageFile)
         {
 
             User? userId = _tokenService.GetCurrentUser();
@@ -449,12 +454,31 @@ namespace pl_backend.Services
 
                     _dataContext.UserLanguages.Add(userLanguage);
                 }
+            }
 
+            if (imageFile != null)
+            {
+                string imagePath = await UploadImage(imageFile); // Upload the image file and get the path
+                user.Avatar = imagePath; // Set the image path in the user object
             }
 
             await _dataContext.SaveChangesAsync();
 
             return user;
+        }
+
+        private async Task<string> UploadImage(IFormFile imageFile)
+        {
+            string uploadsFolder = Path.Combine(_webHostEnvironment.ContentRootPath, "images"); // Path to the images folder
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + imageFile.FileName; // Generate a unique file name
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName); // Full path to save the file
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(fileStream); // Save the file to the server
+            }
+
+            return "/images/" + uniqueFileName; // Return the relative image path to be stored in the database
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)

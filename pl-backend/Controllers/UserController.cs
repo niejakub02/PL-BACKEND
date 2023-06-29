@@ -207,11 +207,12 @@ namespace pl_backend.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<User>> Edit(UserUpdateDto userUpdateDto)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<User>> Edit([FromForm] UserUpdateDto userUpdateDto)
         {
             try
             {
-                User? user = await UserService.UpdateUser(userUpdateDto);
+                User? user = await UserService.UpdateUser(userUpdateDto, userUpdateDto.ImageFile);
                 return Ok(user);
             }
             catch (Exception ex)
