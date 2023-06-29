@@ -344,7 +344,7 @@ namespace pl_backend.Services
 
             List<UserContactDto> userContactDtos = await GetContacts();
             bool isContact = false;
-            foreach(UserContactDto contact in userContactDtos)
+            foreach (UserContactDto contact in userContactDtos)
             {
                 if (contact.Id == addReviewDto.ToId)
                 {
@@ -352,22 +352,39 @@ namespace pl_backend.Services
                 }
             }
 
+
             if (!isContact)
             {
                 throw new Exception("You can not add review for a user that is not on your friend list");
             }
 
-            Review _review = new()
-            {
-                Rating = addReviewDto.Rating,
-                Description = addReviewDto.Description,
-                ToId = addReviewDto.ToId,
-                FromId = currentUserDb.Id
-            };
+            Review? existingReview = await _dataContext.Reviews
+                .Where(r => r.FromId == currentUserDb.Id && r.ToId == addReviewDto.ToId)
+                .FirstOrDefaultAsync();
 
-            _dataContext.Reviews.Add(_review);
+            Review? tmpReview = null;
+            if (existingReview != null)
+            {
+                existingReview.Rating = addReviewDto.Rating;
+                existingReview.Description = addReviewDto.Description;
+                tmpReview = existingReview;
+            }
+            else
+            {
+                Review _review = new()
+                {
+                    Rating = addReviewDto.Rating,
+                    Description = addReviewDto.Description,
+                    ToId = addReviewDto.ToId,
+                    FromId = currentUserDb.Id
+                };
+
+                _dataContext.Reviews.Add(_review);
+                tmpReview = _review;
+            }
+
             await _dataContext.SaveChangesAsync();
-            return _review;
+            return tmpReview;
         }
 
         public async Task<List<GetReviewDto>> GetReviews(int id)
