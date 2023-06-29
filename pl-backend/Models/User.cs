@@ -15,7 +15,7 @@ namespace pl_backend.Models
         public byte[] PasswordSalt { get; set; } = null!;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string Description = string.Empty;
+        public string Description { get; set; } = string.Empty;
         public int Age { get; set; }
         public string Avatar { get; set; } = string.Empty;
         public int? MarkerId { get; set; }
