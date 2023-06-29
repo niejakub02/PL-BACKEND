@@ -17,17 +17,16 @@ namespace pl_backend.Hubs
         }
         public override async Task OnConnectedAsync()
         {
-            User? currentUser = _tokenService.GetCurrentUser();
-            string username = currentUser.FirstName + " " + currentUser.LastName;
+            string username = "username";
             Users.Add(Context.ConnectionId, username);
-            await AddMessageToChat(string.Empty, $"{username} is here!");
+            //await AddMessageToChat(string.Empty, $"{username} is here!");
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
             string username = Users.FirstOrDefault(u => u.Key == Context.ConnectionId).Value;
-            await AddMessageToChat(string.Empty, $"{username} left!");
+            //await AddMessageToChat(string.Empty, $"{username} left!");
         }
 
         public async Task AddMessageToChat(string user, string message)
