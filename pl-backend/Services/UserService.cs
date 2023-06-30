@@ -285,21 +285,24 @@ namespace pl_backend.Services
             {
                 throw new Exception("User not found");
             }
-            var selectedContacts = await _dataContext.Contacts
-                .Where(c => (c.InvitingUserId == currentUser.Id || c.InvitedUserId == currentUser.Id) && c.Status.Equals(false))
+
+            List<Contact> selectedContacts = await _dataContext.Contacts
+                .Where(c => (c.InvitedUserId == currentUser.Id) && c.Status.Equals(false))
                 .ToListAsync();
 
-            var selectedInvitingContactsId = selectedContacts
-                .Where(c => c.InvitingUserId != currentUser.Id)
-                .Select(c => c.InvitingUserId);
+            List<User> users = new();
+            foreach (Contact contact in selectedContacts)
+            {
 
-            var selectedInvitedContactsId = selectedContacts
-                .Where(c => c.InvitedUserId != currentUser.Id)
-                .Select(c => c.InvitedUserId);
+                User? user = await _dataContext.Users
+                    .Where(u => u.Id == contact.InvitingUserId)
+                    .FirstOrDefaultAsync();
 
-            List<User> users = await _dataContext.Users
-                .Where(u => selectedInvitingContactsId.Contains(u.Id) || selectedInvitedContactsId.Contains(u.Id))
-                .ToListAsync();
+                if (user != null)
+                {
+                    users.Add(user);
+                }
+            }
 
             var userContacts = new MapperConfiguration(cfg =>
             {
