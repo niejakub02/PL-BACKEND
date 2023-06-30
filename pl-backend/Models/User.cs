@@ -1,8 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Net.Mail;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace pl_backend.Models
 {
+    [Index(nameof(Email), IsUnique = true)]
     public class User
     {
         [Key]
